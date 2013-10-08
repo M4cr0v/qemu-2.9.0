@@ -474,6 +474,7 @@ void pc_cmos_init(PCMachineState *pcms,
     rtc_set_memory(s, 0x5b, val);
     rtc_set_memory(s, 0x5c, val >> 8);
     rtc_set_memory(s, 0x5d, val >> 16);
+    rtc_set_memory(s, 0x5e, val >> 24);
 
     object_property_add_link(OBJECT(pcms), "rtc_state",
                              TYPE_ISA_DEVICE,
