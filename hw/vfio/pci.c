@@ -34,6 +34,7 @@
 #include "qapi/error.h"
 
 #define MSIX_CAP_LENGTH 12
+#define MAX_DEV_ASSIGN_CMDLINE 32
 
 static void vfio_disable_interrupts(VFIOPCIDevice *vdev);
 static void vfio_mmap_set_enabled(VFIOPCIDevice *vdev, bool enabled);
@@ -2619,7 +2620,19 @@ static void vfio_realize(PCIDevice *pdev, Error **errp)
     ssize_t len;
     struct stat st;
     int groupid;
-    int i, ret;
+    int ret, i = 0;
+
+    QLIST_FOREACH(group, &vfio_group_list, next) {
+        QLIST_FOREACH(vbasedev_iter, &group->device_list, next) {
+            i++;
+        }
+    }
+
+    if (i >= MAX_DEV_ASSIGN_CMDLINE) {
+        error_setg(errp, "Maximum supported vfio devices (%d) "
+                     "already attached", MAX_DEV_ASSIGN_CMDLINE);
+        return;
+    }
 
     if (!vdev->vbasedev.sysfsdev) {
         if (!(~vdev->host.domain || ~vdev->host.bus ||
