@@ -3472,7 +3472,7 @@ static void rtl8139_class_init(ObjectClass *klass, void *data)
 
     k->realize = pci_rtl8139_realize;
     k->exit = pci_rtl8139_uninit;
-    k->romfile = "efi-rtl8139.rom";
+    k->romfile = "pxe-rtl8139.rom";
     k->vendor_id = PCI_VENDOR_ID_REALTEK;
     k->device_id = PCI_DEVICE_ID_REALTEK_8139;
     k->revision = RTL8139_PCI_REVID; /* >=0x20 is for 8139C+ */

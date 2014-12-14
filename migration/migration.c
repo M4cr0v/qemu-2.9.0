@@ -83,6 +83,7 @@ static bool deferred_incoming;
  * at the end as MIS is being freed.
  */
 static PostcopyState incoming_postcopy_state;
+bool migrate_pre_2_2;
 
 /* When we add fault tolerance, we could have several
    migrations at once.  For now we don't need to add

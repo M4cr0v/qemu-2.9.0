@@ -94,6 +94,7 @@ struct VirtIODevice
     uint8_t device_endian;
     bool use_guest_notifier_mask;
     AddressSpace *dma_as;
+    bool rhel6_ctrl_guest_workaround;
     QLIST_HEAD(, VirtQueue) *vector_queues;
 };
 

@@ -452,6 +452,19 @@ void memory_region_allocate_system_memory(MemoryRegion *mr, Object *owner,
         return;
     }
 
+    /* The shadow_bios_after_incoming hack at savevm.c:shadow_bios() is not
+     * able to handle the multiple memory blocks added when using NUMA
+     * memdevs. We can disallow -numa memdev= when using rhel6.* machine-types
+     * because RHEL-6 didn't support the NUMA memdev option.
+     */
+    if (shadow_bios_after_incoming) {
+        MachineClass *mc;
+        mc = MACHINE_GET_CLASS(current_machine);
+        error_report("-numa memdev is not supported by machine %s",
+                     mc->name);
+        exit(1);
+    }
+
     memory_region_init(mr, owner, name, ram_size);
     for (i = 0; i < MAX_NODES; i++) {
         uint64_t size = numa_info[i].node_mem;

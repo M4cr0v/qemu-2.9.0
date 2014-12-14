@@ -108,13 +108,40 @@ typedef struct {
     int psci_conduit;
 } VirtMachineState;
 
+#if 0 /* disabled for Red Hat Enterprise Linux */
+
 #define TYPE_VIRT_MACHINE   MACHINE_TYPE_NAME("virt")
+
 #define VIRT_MACHINE(obj) \
     OBJECT_CHECK(VirtMachineState, (obj), TYPE_VIRT_MACHINE)
 #define VIRT_MACHINE_GET_CLASS(obj) \
     OBJECT_GET_CLASS(VirtMachineClass, obj, TYPE_VIRT_MACHINE)
 #define VIRT_MACHINE_CLASS(klass) \
     OBJECT_CLASS_CHECK(VirtMachineClass, klass, TYPE_VIRT_MACHINE)
+
+#else
+
+#define TYPE_RHEL_MACHINE MACHINE_TYPE_NAME("virt-rhel")
+#define VIRT_MACHINE(obj) \
+    OBJECT_CHECK(VirtMachineState, (obj), TYPE_RHEL_MACHINE)
+#define VIRT_MACHINE_GET_CLASS(obj) \
+    OBJECT_GET_CLASS(VirtMachineClass, obj, TYPE_RHEL_MACHINE)
+#define VIRT_MACHINE_CLASS(klass) \
+    OBJECT_CLASS_CHECK(VirtMachineClass, klass, TYPE_RHEL_MACHINE)
+
+#endif
+
+/* This macro is for changes to properties that are RHEL specific,
+ * different to the current upstream and to be applied to the latest
+ * machine type.
+ */
+#define ARM_RHEL_COMPAT \
+    {\
+        .driver   = "virtio-net-pci",\
+        .property = "romfile",\
+        .value    = "",\
+    },
+
 
 void virt_acpi_setup(VirtMachineState *vms);
 
