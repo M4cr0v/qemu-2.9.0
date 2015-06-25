@@ -26,6 +26,7 @@
 #include "hw/isa/isa.h"
 #include "hw/i386/pc.h"
 #include "hw/input/ps2.h"
+#include "migration/migration.h"
 #include "sysemu/sysemu.h"
 
 /* debug PC keyboard */
@@ -389,6 +390,11 @@ static int kbd_outport_post_load(void *opaque, int version_id)
 static bool kbd_outport_needed(void *opaque)
 {
     KBDState *s = opaque;
+
+    if (migrate_pre_2_2) {
+        return false;
+    }
+
     return s->outport != kbd_outport_default(s);
 }
 
