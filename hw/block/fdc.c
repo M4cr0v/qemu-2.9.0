@@ -36,6 +36,7 @@
 #include "hw/isa/isa.h"
 #include "hw/sysbus.h"
 #include "hw/block/block.h"
+#include "migration/migration.h"
 #include "sysemu/block-backend.h"
 #include "sysemu/blockdev.h"
 #include "sysemu/sysemu.h"
@@ -1042,6 +1043,10 @@ static bool fdrive_perpendicular_needed(void *opaque)
 {
     FDrive *drive = opaque;
 
+    if (migrate_pre_2_2) {
+        return false;
+    }
+
     return drive->perpendicular != 0;
 }
 
@@ -1134,8 +1139,20 @@ static int fdc_post_load(void *opaque, int version_id)
 static bool fdc_reset_sensei_needed(void *opaque)
 {
     FDCtrl *s = opaque;
+    bool needed = s->reset_sensei != 0;
 
-    return s->reset_sensei != 0;
+    if (migrate_pre_2_2) {
+        /*
+         * This probably wont matter for most OSs, but it's good to log
+         * it just incase we find it causes problems.
+         */
+        if (needed) {
+            error_report("INFO: fdc migration just after reset (sensei!=0)");
+        }
+        return false;
+    }
+
+    return needed;
 }
 
 static const VMStateDescription vmstate_fdc_reset_sensei = {
@@ -1152,8 +1169,26 @@ static const VMStateDescription vmstate_fdc_reset_sensei = {
 static bool fdc_result_timer_needed(void *opaque)
 {
     FDCtrl *s = opaque;
+    bool needed = timer_pending(s->result_timer);
 
-    return timer_pending(s->result_timer);
+    if (migrate_pre_2_2) {
+        /*
+         * This could upset some OSs if their read-id command doesn't
+         * complete, so lets log something.
+         */
+        if (needed) {
+            error_report("INFO: fdc migration just after read-id (timer!=0)");
+        }
+        /*
+         * However, since it's not apparently caused us problems for many
+         * years, don't fail the migration, especially as this could
+         * happen as part of a background drive-probe which if it fails
+         * won't be a problem.
+         */
+        return false;
+    }
+
+    return needed;
 }
 
 static const VMStateDescription vmstate_fdc_result_timer = {
