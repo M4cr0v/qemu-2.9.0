@@ -15,7 +15,9 @@
 #include "qapi/qmp/types.h"
 
 static const char *blacklist_x86[] = {
-    "xenfv", "xenpv", NULL
+    "xenfv", "xenpv",
+    "rhel6.6.0", "rhel6.5.0", "rhel6.4.0", "rhel6.3.0",
+    "rhel6.2.0", "rhel6.1.0", "rhel6.0.0", NULL
 };
 
 static const struct {

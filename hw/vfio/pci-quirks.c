@@ -1189,6 +1189,8 @@ static void vfio_pci_igd_lpc_bridge_class_init(ObjectClass *klass, void *data)
     set_bit(DEVICE_CATEGORY_BRIDGE, dc->categories);
     dc->desc = "VFIO dummy ISA/LPC bridge for IGD assignment";
     dc->hotpluggable = false;
+    /* Disabled in Red Hat Enterprise Linux */
+    dc->cannot_instantiate_with_device_add_yet = true;
     k->realize = vfio_pci_igd_lpc_bridge_realize;
     k->class_id = PCI_CLASS_BRIDGE_ISA;
 }
@@ -1378,6 +1380,9 @@ static void vfio_probe_igd_bar4_quirk(VFIOPCIDevice *vdev, int nr)
                                        0, PCI_DEVFN(0x2, 0))) {
         return;
     }
+    
+    /* Disabled in Red Hat Enterprise Linux */
+    return;
 
     /*
      * We need to create an LPC/ISA bridge at PCI bus address 00:1f.0 that we

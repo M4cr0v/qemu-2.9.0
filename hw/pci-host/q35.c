@@ -159,6 +159,7 @@ static void q35_host_class_init(ObjectClass *klass, void *data)
     dc->cannot_instantiate_with_device_add_yet = true;
     set_bit(DEVICE_CATEGORY_BRIDGE, dc->categories);
     dc->fw_name = "pci";
+    dc->cannot_instantiate_with_device_add_yet = true; /* RH state preserve */
 }
 
 static void q35_host_initfn(Object *obj)

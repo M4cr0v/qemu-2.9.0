@@ -849,6 +849,13 @@ static void ivshmem_common_realize(PCIDevice *dev, Error **errp)
         return;
     }
 
+    /* Migration disabled for Red Hat Enterprise Linux: */
+    if (s->master == ON_OFF_AUTO_ON) {
+        error_setg(errp, "master=on is not supported");
+        return;
+    }
+    s->master = ON_OFF_AUTO_OFF;
+
     pci_conf = dev->config;
     pci_conf[PCI_COMMAND] = PCI_COMMAND_IO | PCI_COMMAND_MEMORY;
 
@@ -1146,6 +1153,8 @@ static void ivshmem_doorbell_class_init(ObjectClass *klass, void *data)
     k->realize = ivshmem_doorbell_realize;
     dc->props = ivshmem_doorbell_properties;
     dc->vmsd = &ivshmem_doorbell_vmsd;
+    /* Disabled for Red Hat Enterprise Linux: */
+    dc->cannot_instantiate_with_device_add_yet = true;
 }
 
 static const TypeInfo ivshmem_doorbell_info = {
@@ -1315,6 +1324,8 @@ static void ivshmem_class_init(ObjectClass *klass, void *data)
     dc->desc = "Inter-VM shared memory (legacy)";
     dc->props = ivshmem_properties;
     dc->vmsd = &ivshmem_vmsd;
+    /* Disabled for Red Hat Enterprise Linux: */
+    dc->cannot_instantiate_with_device_add_yet = true;
 }
 
 static const TypeInfo ivshmem_info = {

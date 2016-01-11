@@ -776,11 +776,8 @@ static X86CPUDefinition builtin_x86_defs[] = {
             CPUID_CX8 | CPUID_MCE | CPUID_PAE | CPUID_MSR | CPUID_TSC |
             CPUID_PSE | CPUID_DE | CPUID_FP87,
         .features[FEAT_1_ECX] = CPUID_EXT_CX16 | CPUID_EXT_SSE3,
-        .features[FEAT_8000_0001_EDX] = CPUID_EXT2_LM | CPUID_EXT2_FXSR |
-            CPUID_EXT2_MMX | CPUID_EXT2_NX | CPUID_EXT2_PAT | CPUID_EXT2_CMOV |
-            CPUID_EXT2_PGE | CPUID_EXT2_SYSCALL | CPUID_EXT2_APIC |
-            CPUID_EXT2_CX8 | CPUID_EXT2_MCE | CPUID_EXT2_PAE | CPUID_EXT2_MSR | CPUID_EXT2_TSC |
-            CPUID_EXT2_PSE | CPUID_EXT2_DE | CPUID_EXT2_FPU,
+        .features[FEAT_8000_0001_EDX] = CPUID_EXT2_LM | CPUID_EXT2_NX |
+            CPUID_EXT2_SYSCALL,
         .features[FEAT_8000_0001_ECX] =
             CPUID_EXT3_LAHF_LM | CPUID_EXT3_SVM,
         .xlevel = 0x8000000A,
@@ -1018,11 +1015,7 @@ static X86CPUDefinition builtin_x86_defs[] = {
              CPUID_CX8 | CPUID_MCE | CPUID_PAE | CPUID_MSR | CPUID_TSC |
              CPUID_PSE | CPUID_DE | CPUID_FP87,
         .features[FEAT_1_ECX] = CPUID_EXT_CX16 | CPUID_EXT_SSE3,
-        .features[FEAT_8000_0001_EDX] = CPUID_EXT2_LM | CPUID_EXT2_FXSR |
-             CPUID_EXT2_MMX | CPUID_EXT2_NX | CPUID_EXT2_PAT | CPUID_EXT2_CMOV |
-             CPUID_EXT2_PGE | CPUID_EXT2_SYSCALL | CPUID_EXT2_APIC |
-             CPUID_EXT2_CX8 | CPUID_EXT2_MCE | CPUID_EXT2_PAE | CPUID_EXT2_MSR | CPUID_EXT2_TSC |
-             CPUID_EXT2_PSE | CPUID_EXT2_DE | CPUID_EXT2_FPU,
+        .features[FEAT_8000_0001_EDX] = CPUID_EXT2_LM | CPUID_EXT2_NX | CPUID_EXT2_SYSCALL,
         .features[FEAT_8000_0001_ECX] = CPUID_EXT3_SSE4A | CPUID_EXT3_ABM |
              CPUID_EXT3_SVM | CPUID_EXT3_LAHF_LM,
         .xlevel = 0x8000000A,
@@ -4021,11 +4014,13 @@ static Property x86_cpu_properties[] = {
     DEFINE_PROP_BOOL("hv-vapic", X86CPU, hyperv_vapic, false),
     DEFINE_PROP_BOOL("hv-time", X86CPU, hyperv_time, false),
     DEFINE_PROP_BOOL("hv-crash", X86CPU, hyperv_crash, false),
+#if 0 /* Disabled for Red Hat Enterprise Linux */
     DEFINE_PROP_BOOL("hv-reset", X86CPU, hyperv_reset, false),
     DEFINE_PROP_BOOL("hv-vpindex", X86CPU, hyperv_vpindex, false),
     DEFINE_PROP_BOOL("hv-runtime", X86CPU, hyperv_runtime, false),
     DEFINE_PROP_BOOL("hv-synic", X86CPU, hyperv_synic, false),
     DEFINE_PROP_BOOL("hv-stimer", X86CPU, hyperv_stimer, false),
+#endif
     DEFINE_PROP_BOOL("check", X86CPU, check_cpuid, true),
     DEFINE_PROP_BOOL("enforce", X86CPU, enforce_cpuid, false),
     DEFINE_PROP_BOOL("kvm", X86CPU, expose_kvm, true),

@@ -286,6 +286,7 @@ static void kvmclock_class_init(ObjectClass *klass, void *data)
     dc->realize = kvmclock_realize;
     dc->vmsd = &kvmclock_vmsd;
     dc->props = kvmclock_properties;
+    dc->cannot_instantiate_with_device_add_yet = true; /* RH state preserve */
 }
 
 static const TypeInfo kvmclock_info = {

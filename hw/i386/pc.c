@@ -1596,8 +1596,9 @@ void pc_basic_device_init(ISABus *isa_bus, qemu_irq *gsi,
     }
 
     serial_hds_isa_init(isa_bus, 0, MAX_SERIAL_PORTS);
+#if 0 /* Disabled for Red Hat Enterprise Linux 7 */
     parallel_hds_isa_init(isa_bus, MAX_PARALLEL_PORTS);
-
+#endif
     a20_line = qemu_allocate_irqs(handle_a20_line_change, first_cpu, 2);
     i8042 = isa_create_simple(isa_bus, "i8042");
     i8042_setup_a20_line(i8042, a20_line[0]);

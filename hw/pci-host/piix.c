@@ -756,6 +756,7 @@ static const TypeInfo i440fx_info = {
     .class_init    = i440fx_class_init,
 };
 
+#if 0 /*  Disabled in Red Hat Enterprise Linux */
 /* IGD Passthrough Host Bridge. */
 typedef struct {
     uint8_t offset;
@@ -844,6 +845,7 @@ static const TypeInfo igd_passthrough_i440fx_info = {
     .instance_size = sizeof(PCII440FXState),
     .class_init    = igd_passthrough_i440fx_class_init,
 };
+#endif
 
 static const char *i440fx_pcihost_root_bus_path(PCIHostState *host_bridge,
                                                 PCIBus *rootbus)
@@ -888,7 +890,9 @@ static const TypeInfo i440fx_pcihost_info = {
 static void i440fx_register_types(void)
 {
     type_register_static(&i440fx_info);
+#if 0 /*  Disabled in Red Hat Enterprise Linux */
     type_register_static(&igd_passthrough_i440fx_info);
+#endif
     type_register_static(&piix3_pci_type_info);
     type_register_static(&piix3_info);
     type_register_static(&piix3_xen_info);

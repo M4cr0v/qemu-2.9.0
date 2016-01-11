@@ -448,6 +448,7 @@ static void ioapic_class_init(ObjectClass *klass, void *data)
     k->post_load = ioapic_update_kvm_routes;
     dc->reset = ioapic_reset_common;
     dc->props = ioapic_properties;
+    dc->cannot_instantiate_with_device_add_yet = true; /* RH state preserve */
 }
 
 static const TypeInfo ioapic_info = {

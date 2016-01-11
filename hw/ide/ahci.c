@@ -1720,6 +1720,7 @@ static void sysbus_ahci_class_init(ObjectClass *klass, void *data)
     dc->vmsd = &vmstate_sysbus_ahci;
     dc->props = sysbus_ahci_properties;
     dc->reset = sysbus_ahci_reset;
+    dc->cannot_instantiate_with_device_add_yet = true; /* RH state preserve */
     set_bit(DEVICE_CATEGORY_STORAGE, dc->categories);
 }
 
@@ -1731,6 +1732,7 @@ static const TypeInfo sysbus_ahci_info = {
     .class_init    = sysbus_ahci_class_init,
 };
 
+#if 0  /* Disabled in Red Hat Enterprise Linux */
 #define ALLWINNER_AHCI_BISTAFR    ((0xa0 - ALLWINNER_AHCI_MMIO_OFF) / 4)
 #define ALLWINNER_AHCI_BISTCR     ((0xa4 - ALLWINNER_AHCI_MMIO_OFF) / 4)
 #define ALLWINNER_AHCI_BISTFCTR   ((0xa8 - ALLWINNER_AHCI_MMIO_OFF) / 4)
@@ -1824,11 +1826,14 @@ static const TypeInfo allwinner_ahci_info = {
     .instance_init = allwinner_ahci_init,
     .class_init    = allwinner_ahci_class_init,
 };
+#endif
 
 static void sysbus_ahci_register_types(void)
 {
     type_register_static(&sysbus_ahci_info);
+#if 0  /* Disabled in Red Hat Enterprise Linux */
     type_register_static(&allwinner_ahci_info);
+#endif
 }
 
 type_init(sysbus_ahci_register_types)

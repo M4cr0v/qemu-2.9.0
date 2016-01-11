@@ -26,14 +26,14 @@ static testdef_t tests[] = {
     { "alpha", "clipper", "", "PCI:" },
     { "ppc", "ppce500", "", "U-Boot" },
     { "ppc", "prep", "", "Open Hack'Ware BIOS" },
-    { "ppc64", "ppce500", "", "U-Boot" },
-    { "ppc64", "prep", "", "Open Hack'Ware BIOS" },
+/*    { "ppc64", "ppce500", "", "U-Boot" },
+    { "ppc64", "prep", "", "Open Hack'Ware BIOS" }, */
     { "ppc64", "pseries", "", "Open Firmware" },
-    { "ppc64", "powernv", "-cpu POWER8", "SkiBoot" },
+/*    { "ppc64", "powernv", "-cpu POWER8", "SkiBoot" }, */
     { "i386", "isapc", "-cpu qemu32 -device sga", "SGABIOS" },
     { "i386", "pc", "-device sga", "SGABIOS" },
     { "i386", "q35", "-device sga", "SGABIOS" },
-    { "x86_64", "isapc", "-cpu qemu32 -device sga", "SGABIOS" },
+    { "x86_64", "pc", "-cpu qemu32 -device sga", "SGABIOS" },
     { "x86_64", "q35", "-device sga", "SGABIOS" },
     { "s390x", "s390-ccw-virtio",
       "-nodefaults -device sclpconsole,chardev=serial0", "virtio device" },

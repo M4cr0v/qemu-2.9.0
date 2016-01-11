@@ -611,6 +611,7 @@ static void floppy_drive_class_init(ObjectClass *klass, void *data)
     k->bus_type = TYPE_FLOPPY_BUS;
     k->props = floppy_drive_properties;
     k->desc = "virtual floppy drive";
+    k->cannot_instantiate_with_device_add_yet = true; /* RH state preserve */
 }
 
 static const TypeInfo floppy_drive_info = {
@@ -2879,6 +2880,7 @@ static void sysbus_fdc_class_init(ObjectClass *klass, void *data)
     DeviceClass *dc = DEVICE_CLASS(klass);
 
     dc->props = sysbus_fdc_properties;
+    dc->cannot_instantiate_with_device_add_yet = true; /* RH state preserve */
     set_bit(DEVICE_CATEGORY_STORAGE, dc->categories);
 }
 
@@ -2905,6 +2907,7 @@ static void sun4m_fdc_class_init(ObjectClass *klass, void *data)
     DeviceClass *dc = DEVICE_CLASS(klass);
 
     dc->props = sun4m_fdc_properties;
+    dc->cannot_instantiate_with_device_add_yet = true; /* RH state preserve */
     set_bit(DEVICE_CATEGORY_STORAGE, dc->categories);
 }
 

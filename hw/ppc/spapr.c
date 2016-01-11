@@ -983,6 +983,7 @@ static void *spapr_build_fdt(sPAPRMachineState *spapr,
     /* /vdevice */
     spapr_dt_vdevice(spapr->vio_bus, fdt);
 
+#if 0 /* Disabled in Red Hat Enterprise Linux */
     if (object_resolve_path_type("", TYPE_SPAPR_RNG, NULL)) {
         ret = spapr_rng_populate_dt(fdt);
         if (ret < 0) {
@@ -990,7 +991,7 @@ static void *spapr_build_fdt(sPAPRMachineState *spapr,
             exit(1);
         }
     }
-
+#endif
     QLIST_FOREACH(phb, &spapr->phbs, list) {
         ret = spapr_populate_pci_dt(phb, PHANDLE_XICP, fdt);
         if (ret < 0) {
