@@ -145,8 +145,7 @@ void qmp_simple_drive_add(QDict *qdict, QObject **ret_data, Error **errp)
     mc = MACHINE_GET_CLASS(current_machine);
     dinfo = drive_new(opts, mc->block_default_type);
     if (!dinfo) {
-        error_report(QERR_DEVICE_INIT_FAILED,
-                      qemu_opts_id(opts));
+        error_setg(errp, QERR_DEVICE_INIT_FAILED, qemu_opts_id(opts));
         qemu_opts_del(opts);
         return;
     }
