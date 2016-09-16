@@ -448,6 +448,32 @@ static void extract_common_blockdev_options(QemuOpts *opts, int *bdrv_flags,
     }
 }
 
+/**
+ * libvirt expects to be able to pass cache options for CDROM drives without
+ * inserted media. Historically, QEMU eventually ignores these cache options as
+ * they are lost when media is inserted. Recently, QEMU started rejecting these
+ * configurations. Libvirt however still generates such configurations.
+ *
+ * To prevent QEMU from being unable to start, pretend there are no options
+ * present if the only options present are cache options for the BDS.
+ */
+static bool __redhat_com_has_bs_opts(QDict *bs_opts)
+{
+    size_t n, s;
+    s = qdict_size(bs_opts);
+
+    if (s == 0) {
+        return false;
+    } else if (s > 2) {
+        return true;
+    }
+
+    n = qdict_haskey(bs_opts, BDRV_OPT_CACHE_DIRECT);
+    n += qdict_haskey(bs_opts, BDRV_OPT_CACHE_NO_FLUSH);
+
+    return s != n;
+}
+
 /* Takes the ownership of bs_opts */
 static BlockBackend *blockdev_init(const char *file, QDict *bs_opts,
                                    Error **errp)
@@ -555,7 +581,7 @@ static BlockBackend *blockdev_init(const char *file, QDict *bs_opts,
     read_only = qemu_opt_get_bool(opts, BDRV_OPT_READ_ONLY, false);
 
     /* init */
-    if ((!file || !*file) && !qdict_size(bs_opts)) {
+    if ((!file || !*file) && !__redhat_com_has_bs_opts(bs_opts)) {
         BlockBackendRootState *blk_rs;
 
         blk = blk_new(0, BLK_PERM_ALL);
