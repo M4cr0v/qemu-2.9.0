@@ -324,6 +324,10 @@
         .driver   = "virtio-pci",\
         .property = "x-ignore-backend-features",\
         .value    = "on",\
+    },{ /* HW_COMPAT_RHEL7_3 */ \
+        .driver   = "e1000e",\
+        .property = "__redhat_e1000e_7_3_intr_state",\
+        .value    = "on",\
     },
 
 #endif /* HW_COMPAT_H */

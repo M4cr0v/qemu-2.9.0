@@ -73,6 +73,11 @@ typedef struct E1000EState {
 
     E1000ECore core;
 
+    /* 7.3 had the intr_state field that was in the original e1000e code
+     * but that was removed prior to 2.7's release
+     */
+    bool redhat_7_3_intr_state_enable;
+    uint32_t redhat_7_3_intr_state;
 } E1000EState;
 
 #define E1000E_MMIO_IDX     0
@@ -87,6 +92,10 @@ typedef struct E1000EState {
 
 #define E1000E_MSIX_TABLE   (0x0000)
 #define E1000E_MSIX_PBA     (0x2000)
+
+/* Values as in RHEL 7.3 build and original upstream */
+#define RH_E1000E_USE_MSI     BIT(0)
+#define RH_E1000E_USE_MSIX    BIT(1)
 
 static uint64_t
 e1000e_mmio_read(void *opaque, hwaddr addr, unsigned size)
@@ -299,6 +308,8 @@ e1000e_init_msix(E1000EState *s)
     } else {
         if (!e1000e_use_msix_vectors(s, E1000E_MSIX_VEC_NUM)) {
             msix_uninit(d, &s->msix, &s->msix);
+        } else {
+            s->redhat_7_3_intr_state |= RH_E1000E_USE_MSIX;
         }
     }
 }
@@ -465,6 +476,8 @@ static void e1000e_pci_realize(PCIDevice *pci_dev, Error **errp)
     ret = msi_init(PCI_DEVICE(s), 0xD0, 1, true, false, NULL);
     if (ret) {
         trace_e1000e_msi_init_fail(ret);
+    } else {
+        s->redhat_7_3_intr_state |= RH_E1000E_USE_MSI;
     }
 
     if (e1000e_add_pm_capability(pci_dev, e1000e_pmrb_offset,
@@ -586,6 +599,11 @@ static const VMStateDescription e1000e_vmstate_intr_timer = {
     VMSTATE_STRUCT_ARRAY(_f, _s, _num, 0,                           \
                          e1000e_vmstate_intr_timer, E1000IntrDelayTimer)
 
+static bool rhel_7_3_check(void *opaque, int version_id)
+{
+    return ((E1000EState *)opaque)->redhat_7_3_intr_state_enable;
+}
+
 static const VMStateDescription e1000e_vmstate = {
     .name = "e1000e",
     .version_id = 1,
@@ -597,6 +615,7 @@ static const VMStateDescription e1000e_vmstate = {
         VMSTATE_MSIX(parent_obj, E1000EState),
 
         VMSTATE_UINT32(ioaddr, E1000EState),
+        VMSTATE_UINT32_TEST(redhat_7_3_intr_state, E1000EState, rhel_7_3_check),
         VMSTATE_UINT32(core.rxbuf_min_shift, E1000EState),
         VMSTATE_UINT8(core.rx_desc_len, E1000EState),
         VMSTATE_UINT32_ARRAY(core.rxbuf_sizes, E1000EState,
@@ -645,6 +664,8 @@ static PropertyInfo e1000e_prop_disable_vnet,
 
 static Property e1000e_properties[] = {
     DEFINE_NIC_PROPERTIES(E1000EState, conf),
+    DEFINE_PROP_BOOL("__redhat_e1000e_7_3_intr_state", E1000EState,
+                        redhat_7_3_intr_state_enable, false),
     DEFINE_PROP_DEFAULT("disable_vnet_hdr", E1000EState, disable_vnet, false,
                         e1000e_prop_disable_vnet, bool),
     DEFINE_PROP_DEFAULT("subsys_ven", E1000EState, subsys_ven,
