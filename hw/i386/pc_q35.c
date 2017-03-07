@@ -379,6 +379,7 @@ static void pc_q35_machine_rhel7_options(MachineClass *m)
     m->no_floppy = 1;
     m->has_dynamic_sysbus = true;
     m->alias = "q35";
+    m->max_cpus = 288;
     SET_MACHINE_COMPAT(m, PC_RHEL_COMPAT);
 }
 
@@ -406,6 +407,7 @@ static void pc_q35_machine_rhel730_options(MachineClass *m)
     pc_q35_machine_rhel740_options(m);
     m->alias = NULL;
     m->desc = "RHEL-7.3.0 PC (Q35 + ICH9, 2009)";
+    m->max_cpus = 255;
     SET_MACHINE_COMPAT(m, PC_RHEL7_3_COMPAT);
 }
 
