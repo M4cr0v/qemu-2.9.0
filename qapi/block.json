@@ -212,6 +212,51 @@
   'data': { 'id': 'str' } }
 
 ##
+# @__com.redhat_drive_add:
+#
+# Create a drive similar to -drive if=none.
+#
+# @id: Drive ID, must be unique
+# @file: Disk image
+# @format: Disk format
+# @aio: How to perform asynchronous disk I/O
+# @cache: Host cache use policy
+# @cyls, "heads", "secs": Disk geometry
+# @trans: BIOS translation mode
+# @media: Media type
+# @readonly: Open image read-only
+# @rerror: What to do on read error
+# @werror: What to do on write error
+# @serial: Drive serial number
+# @snapshot: Enable snapshot mode
+# @copy-on-read: Enable copy-on-read mode
+#
+# Example:
+#
+# 1. Add a drive without medium:
+#
+# -> { "execute": "__com.redhat_drive_add", "arguments": { "id": "foo" } }
+# <- {"return": {}}
+#
+# 2. Add a drive with medium:
+#
+# -> { "execute": "__com.redhat_drive_add",
+#      "arguments": { "id": "bar", "file": "tmp.qcow2", "format": "qcow2" } }
+# <- {"return": {}}
+#
+##
+{ 'command': '__com.redhat_drive_add',
+  'data': { 'id': 'str', '*file': 'str', '*format': 'str',
+            '*aio': 'BlockdevAioOptions',
+            '*cache': 'BlockdevCacheOptions',
+            '*cyls': 'int', '*heads': 'int', '*secs': 'int',
+            '*trans': 'str', '*media': 'str',
+            '*readonly': 'bool', '*snapshot': 'bool',
+            '*rerror': 'str', '*werror': 'str',
+            '*copy-on-read': 'bool', '*serial': 'str' },
+  'gen': false }                # just to minimize porting churn
+
+##
 # @nbd-server-start:
 #
 # Start an NBD server listening on the given host and port.  Block
