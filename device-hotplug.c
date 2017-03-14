@@ -117,7 +117,7 @@ static void check_parm(const char *key, QObject *obj, void *opaque)
     }
 }
 
-void simple_drive_add(QDict *qdict, QObject **ret_data, Error **errp)
+void qmp_simple_drive_add(QDict *qdict, QObject **ret_data, Error **errp)
 {
     int stopped;
     Error *local_err = NULL;
@@ -152,4 +152,14 @@ void simple_drive_add(QDict *qdict, QObject **ret_data, Error **errp)
     }
 
     return;
+}
+
+void hmp_simple_drive_add(Monitor *mon, const QDict *qdict)
+{
+    Error *err = NULL;
+
+    qmp_simple_drive_add((QDict *)qdict, NULL, &err);
+    if (err) {
+        error_report_err(err);
+    }
 }

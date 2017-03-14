@@ -1014,7 +1014,7 @@ void monitor_init_qmp_commands(void)
                          QCO_NO_OPTIONS);
     qmp_register_command(&qmp_commands, "netdev_add", qmp_netdev_add,
                          QCO_NO_OPTIONS);
-    qmp_register_command(&qmp_commands, "__com.redhat_drive_add", simple_drive_add,
+    qmp_register_command(&qmp_commands, "__com.redhat_drive_add", qmp_simple_drive_add,
                          QCO_NO_OPTIONS);
 
     qmp_unregister_commands_hack();
