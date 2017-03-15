@@ -3351,6 +3351,19 @@
             'fatal'      : 'bool' } }
 
 ##
+# @RHEL7BlockErrorReason:
+#
+# Block I/O error reason
+#
+# @eio:  errno EIO
+# @eperm: errno EPERM
+# @enospc: errno ENOSPC
+# @eother: any errno other than EIO, EPERM, ENOSPC
+##
+{ 'enum': 'RHEL7BlockErrorReason',
+  'data': [ 'enospc', 'eperm', 'eio', 'eother' ] }
+
+##
 # @BLOCK_IO_ERROR:
 #
 # Emitted when a disk I/O error occurs
@@ -3376,6 +3389,8 @@
 #          (This field is a debugging aid for humans, it should not
 #           be parsed by applications) (since: 2.2)
 #
+# @__com.redhat_reason: error reason
+#
 # Note: If action is "stop", a STOP event will eventually follow the
 # BLOCK_IO_ERROR event
 #
@@ -3394,7 +3409,7 @@
 { 'event': 'BLOCK_IO_ERROR',
   'data': { 'device': 'str', 'node-name': 'str', 'operation': 'IoOperationType',
             'action': 'BlockErrorAction', '*nospace': 'bool',
-            'reason': 'str' } }
+            'reason': 'str', '__com.redhat_reason': 'RHEL7BlockErrorReason' } }
 
 ##
 # @BLOCK_JOB_COMPLETED:

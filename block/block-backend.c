@@ -1422,9 +1422,25 @@ BlockErrorAction blk_get_error_action(BlockBackend *blk, bool is_read,
     }
 }
 
+/* https://bugzilla.redhat.com/show_bug.cgi?id=1199174 */
+static RHEL7BlockErrorReason get_rhel7_error_reason(int error)
+{
+	switch (error) {
+	case ENOSPC:
+        return RHEL7_BLOCK_ERROR_REASON_ENOSPC;
+	case EPERM:
+        return RHEL7_BLOCK_ERROR_REASON_EPERM;
+	case EIO:
+        return RHEL7_BLOCK_ERROR_REASON_EIO;
+	default:
+        return RHEL7_BLOCK_ERROR_REASON_EOTHER;
+    }
+}
+
 static void send_qmp_error_event(BlockBackend *blk,
                                  BlockErrorAction action,
-                                 bool is_read, int error)
+                                 bool is_read, int error,
+                                 RHEL7BlockErrorReason res)
 {
     IoOperationType optype;
 
@@ -1433,7 +1449,7 @@ static void send_qmp_error_event(BlockBackend *blk,
                                    bdrv_get_node_name(blk_bs(blk)), optype,
                                    action, blk_iostatus_is_enabled(blk),
                                    error == ENOSPC, strerror(error),
-                                   &error_abort);
+                                   res, &error_abort);
 }
 
 /* This is done by device models because, while the block layer knows
@@ -1443,7 +1459,10 @@ static void send_qmp_error_event(BlockBackend *blk,
 void blk_error_action(BlockBackend *blk, BlockErrorAction action,
                       bool is_read, int error)
 {
+    RHEL7BlockErrorReason res;
+
     assert(error >= 0);
+    res = get_rhel7_error_reason(error);
 
     if (action == BLOCK_ERROR_ACTION_STOP) {
         /* First set the iostatus, so that "info block" returns an iostatus
@@ -1461,10 +1480,10 @@ void blk_error_action(BlockBackend *blk, BlockErrorAction action,
          * also ensures that the STOP/RESUME pair of events is emitted.
          */
         qemu_system_vmstop_request_prepare();
-        send_qmp_error_event(blk, action, is_read, error);
+        send_qmp_error_event(blk, action, is_read, error, res);
         qemu_system_vmstop_request(RUN_STATE_IO_ERROR);
     } else {
-        send_qmp_error_event(blk, action, is_read, error);
+        send_qmp_error_event(blk, action, is_read, error, res);
     }
 }
 
