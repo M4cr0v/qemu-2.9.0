@@ -1042,6 +1042,11 @@ extern void igd_passthrough_isa_bridge_create(PCIBus *bus, uint16_t gpu_dev_id);
             .driver   = TYPE_X86_CPU,\
             .property = "cpuid-0xb",\
             .value    = "off",\
+        },\
+        { /* PC_RHEL7_3_COMPAT */ \
+            .driver = TYPE_X86_CPU,\
+            .property = "kvm-no-smi-migration",\
+            .value    = "on",\
         },
 
 #define PC_RHEL7_2_COMPAT \
