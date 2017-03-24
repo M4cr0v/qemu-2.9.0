@@ -3456,7 +3456,7 @@ DEFINE_SPAPR_MACHINE(rhel740, "rhel7.4.0", true);
 
 /*
  * pseries-rhel7.3.0
- * like SPAPR_COMPAT_2_6 and _2_7 but "ddw" has been backported to RHEL7_3
+ * like SPAPR_COMPAT_2_6/_2_7/_2_8 but "ddw" has been backported to RHEL7_3
  */
 #define SPAPR_COMPAT_RHEL7_3 \
     HW_COMPAT_RHEL7_3                               \
@@ -3479,6 +3479,11 @@ DEFINE_SPAPR_MACHINE(rhel740, "rhel7.4.0", true);
         .driver = TYPE_SPAPR_PCI_HOST_BRIDGE,       \
         .property = "pre-2.8-migration",            \
         .value    = "on",                           \
+    },                                              \
+    {                                               \
+        .driver   = TYPE_SPAPR_PCI_HOST_BRIDGE,     \
+        .property = "pcie-extended-configuration-space",\
+        .value    = "off",                          \
     },
 
 static void spapr_machine_rhel730_instance_options(MachineState *machine)
