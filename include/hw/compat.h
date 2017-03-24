@@ -325,6 +325,38 @@
         .property = "x-ignore-backend-features",\
         .value    = "on",\
     },{ /* HW_COMPAT_RHEL7_3 */ \
+        .driver   = "fw_cfg_mem",\
+        .property = "x-file-slots",\
+        .value    = stringify(0x10),\
+    },{ /* HW_COMPAT_RHEL7_3 */ \
+        .driver   = "fw_cfg_io",\
+        .property = "x-file-slots",\
+        .value    = stringify(0x10),\
+    },{ /* HW_COMPAT_RHEL7_3 */ \
+        .driver   = "pflash_cfi01",\
+        .property = "old-multiple-chip-handling",\
+        .value    = "on",\
+    },{ /* HW_COMPAT_RHEL7_3 */ \
+        .driver   = "pci-bridge",\
+        .property = "shpc",\
+        .value    = "on",\
+    },{ /* HW_COMPAT_RHEL7_3 */ \
+        .driver   = TYPE_PCI_DEVICE,\
+        .property = "x-pcie-extcap-init",\
+        .value    = "off",\
+    },{ /* HW_COMPAT_RHEL7_3 */ \
+        .driver   = "virtio-pci",\
+        .property = "x-pcie-deverr-init",\
+        .value    = "off",\
+    },{ /* HW_COMPAT_RHEL7_3 */ \
+        .driver   = "virtio-pci",\
+        .property = "x-pcie-lnkctl-init",\
+        .value    = "off",\
+    },{ /* HW_COMPAT_RHEL7_3 */ \
+        .driver   = "virtio-pci",\
+        .property = "x-pcie-pm-init",\
+        .value    = "off",\
+    },{ /* HW_COMPAT_RHEL7_3 */ \
         .driver   = "e1000e",\
         .property = "__redhat_e1000e_7_3_intr_state",\
         .value    = "on",\
