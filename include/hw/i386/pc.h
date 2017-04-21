@@ -1034,11 +1034,6 @@ extern void igd_passthrough_isa_bridge_create(PCIBus *bus, uint16_t gpu_dev_id);
             .value    = "off",\
         },\
         { /* PC_RHEL7_3_COMPAT from PC_COMPAT_2_6 */ \
-            .driver   = "fw_cfg_io",\
-            .property = "dma_enabled",\
-            .value    = "off",\
-        },\
-        { /* PC_RHEL7_3_COMPAT from PC_COMPAT_2_6 */ \
             .driver   = TYPE_X86_CPU,\
             .property = "cpuid-0xb",\
             .value    = "off",\
