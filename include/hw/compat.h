@@ -297,6 +297,10 @@
             .driver   = "virtio-pci",\
             .property = "page-per-vq",\
             .value    = "on",\
+        },{ /* HW_COMPAT_RHEL7_2 from HW_COMPAT_2_4 added in 2.9 */ \
+            .driver   = "vmgenid",\
+            .property = "x-write-pointer-available",\
+            .value    = "off",\
         },
 
 /* Mostly like HW_COMPAT_2_6 + HW_COMPAT_2_7 + HW_COMPAT_2_8 except

@@ -998,7 +998,7 @@ extern void igd_passthrough_isa_bridge_create(PCIBus *bus, uint16_t gpu_dev_id);
 
 #define PC_RHEL7_3_COMPAT \
         HW_COMPAT_RHEL7_3 \
-        { /* PC_RHEL7_3_COMPAT from PC_COMPAT_2_7 */ \
+        { /* PC_RHEL7_3_COMPAT from PC_COMPAT_2_8 */ \
              .driver   = "kvmclock",\
              .property = "x-mach-use-reliable-get-clock",\
              .value    = "off",\
@@ -1038,7 +1038,22 @@ extern void igd_passthrough_isa_bridge_create(PCIBus *bus, uint16_t gpu_dev_id);
             .property = "cpuid-0xb",\
             .value    = "off",\
         },\
-        { /* PC_RHEL7_3_COMPAT */ \
+        { /* PC_RHEL7_3_COMPAT from PC_COMPAT_2_8 */ \
+            .driver   = "ICH9-LPC",\
+            .property = "x-smi-broadcast",\
+            .value    = "off",\
+        },\
+        { /* PC_RHEL7_3_COMPAT from PC_COMPAT_2_8 */ \
+            .driver   = TYPE_X86_CPU,\
+            .property = "vmware-cpuid-freq",\
+            .value    = "off",\
+        },\
+        { /* PC_RHEL7_3_COMPAT from PC_COMPAT_2_8 */ \
+            .driver   = "Haswell-" TYPE_X86_CPU,\
+            .property = "stepping",\
+            .value    = "1",\
+        },\
+        { /* PC_RHEL7_3_COMPAT from PC_COMPAT_2_3 added in 2.9 */ \
             .driver = TYPE_X86_CPU,\
             .property = "kvm-no-smi-migration",\
             .value    = "on",\
