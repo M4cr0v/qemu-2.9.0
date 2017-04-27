@@ -7,7 +7,6 @@ CONFIG_VIRTIO=y
 CONFIG_USB_XHCI=y
 CONFIG_WDT_IB6300ESB=y
 CONFIG_PCI_TESTDEV=y
-CONFIG_ISA_BUS=y
 
 include sound.mak
 include usb.mak
