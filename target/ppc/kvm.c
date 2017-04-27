@@ -49,6 +49,7 @@
 #if defined(TARGET_PPC64)
 #include "hw/ppc/spapr_cpu_core.h"
 #endif
+#include "sysemu/kvm_int.h"
 
 //#define DEBUG_KVM
 
@@ -330,6 +331,30 @@ static void kvm_get_smmu_info(PowerPCCPU *cpu, struct kvm_ppc_smmu_info *info)
     }
 
     kvm_get_fallback_smmu_info(cpu, info);
+}
+
+struct ppc_radix_page_info *kvm_get_radix_page_info(void)
+{
+    KVMState *s = KVM_STATE(current_machine->accelerator);
+    struct ppc_radix_page_info *radix_page_info;
+    struct kvm_ppc_rmmu_info rmmu_info;
+    int i;
+
+    if (!kvm_check_extension(s, KVM_CAP_PPC_MMU_RADIX)) {
+        return NULL;
+    }
+    if (kvm_vm_ioctl(s, KVM_PPC_GET_RMMU_INFO, &rmmu_info)) {
+        return NULL;
+    }
+    radix_page_info = g_malloc0(sizeof(*radix_page_info));
+    radix_page_info->count = 0;
+    for (i = 0; i < PPC_PAGE_SIZES_MAX_SZ; i++) {
+        if (rmmu_info.ap_encodings[i]) {
+            radix_page_info->entries[i] = rmmu_info.ap_encodings[i];
+            radix_page_info->count++;
+        }
+    }
+    return radix_page_info;
 }
 
 static bool kvm_valid_page_size(uint32_t flags, long rampgsize, uint32_t shift)
@@ -2308,6 +2333,10 @@ static void kvmppc_host_cpu_class_init(ObjectClass *oc, void *data)
 
     /* Reason: kvmppc_host_cpu_initfn() dies when !kvm_enabled() */
     dc->cannot_destroy_with_object_finalize_yet = true;
+
+#if defined(TARGET_PPC64)
+    pcc->radix_page_info = kvm_get_radix_page_info();
+#endif /* defined(TARGET_PPC64) */
 }
 
 bool kvmppc_has_cap_epr(void)
