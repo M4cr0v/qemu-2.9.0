@@ -265,6 +265,8 @@ SCSIDevice *scsi_bus_legacy_add_drive(SCSIBus *bus, BlockBackend *blk,
 
 void scsi_bus_legacy_handle_cmdline(SCSIBus *bus, bool deprecated)
 {
+#if 0 /* Disabled for Red Hat Enterprise Linux */
+
     Location loc;
     DriveInfo *dinfo;
     int unit;
@@ -291,7 +293,10 @@ void scsi_bus_legacy_handle_cmdline(SCSIBus *bus, bool deprecated)
                                   unit, false, -1, NULL, &error_fatal);
     }
     loc_pop(&loc);
+#endif
 }
+
+#if 0 /* Disabled for Red Hat Enterprise Linux */
 
 static bool is_scsi_hba_with_legacy_magic(Object *obj)
 {
@@ -328,6 +333,8 @@ void scsi_legacy_handle_cmdline(void)
     object_child_foreach_recursive(object_get_root(),
                                    scsi_legacy_handle_cmdline_cb, NULL);
 }
+
+#endif
 
 static int32_t scsi_invalid_field(SCSIRequest *req, uint8_t *buf)
 {

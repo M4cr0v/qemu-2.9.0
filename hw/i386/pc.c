@@ -1648,6 +1648,7 @@ void pc_nic_init(ISABus *isa_bus, PCIBus *pci_bus)
 
 void pc_pci_device_init(PCIBus *pci_bus)
 {
+#if 0 /* Disabled for Red Hat Enterprise Linux */
     int max_bus;
     int bus;
 
@@ -1661,6 +1662,7 @@ void pc_pci_device_init(PCIBus *pci_bus)
          * this usage is deprecated.
          */
     }
+#endif
 }
 
 void ioapic_init_gsi(GSIState *gsi_state, const char *parent_name)

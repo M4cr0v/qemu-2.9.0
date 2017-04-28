@@ -4602,6 +4602,7 @@ int main(int argc, char **argv, char **envp)
 
     rom_reset_order_override();
 
+#if 0 /* Disabled for Red Hat Enterprise Linux */
     /*
      * Create frontends for -drive if=scsi leftovers.
      * Normally, frontends for -drive get created by machine
@@ -4610,6 +4611,7 @@ int main(int argc, char **argv, char **envp)
      * implementation accident, and deprecated.
      */
     scsi_legacy_handle_cmdline();
+#endif
 
     /* Did we create any drives that we failed to create a device for? */
     drive_check_orphaned();
