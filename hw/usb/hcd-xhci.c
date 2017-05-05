@@ -3575,6 +3575,12 @@ static void usb_xhci_realize(struct PCIDevice *dev, Error **errp)
         xhci->max_pstreams_mask = 0;
     }
 
+    if (pci_bus_is_express(dev->bus) ||
+        xhci_get_flag(xhci, XHCI_FLAG_FORCE_PCIE_ENDCAP)) {
+        ret = pcie_endpoint_cap_init(dev, 0xa0);
+        assert(ret >= 0);
+    }
+
     if (xhci->msi != ON_OFF_AUTO_OFF) {
         ret = msi_init(dev, 0x70, xhci->numintrs, true, false, &err);
         /* Any error other than -ENOTSUP(board's MSI support is broken)
@@ -3622,12 +3628,6 @@ static void usb_xhci_realize(struct PCIDevice *dev, Error **errp)
     pci_register_bar(dev, 0,
                      PCI_BASE_ADDRESS_SPACE_MEMORY|PCI_BASE_ADDRESS_MEM_TYPE_64,
                      &xhci->mem);
-
-    if (pci_bus_is_express(dev->bus) ||
-        xhci_get_flag(xhci, XHCI_FLAG_FORCE_PCIE_ENDCAP)) {
-        ret = pcie_endpoint_cap_init(dev, 0xa0);
-        assert(ret >= 0);
-    }
 
     if (xhci->msix != ON_OFF_AUTO_OFF) {
         /* TODO check for errors, and should fail when msix=on */
