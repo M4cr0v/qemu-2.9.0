@@ -9,7 +9,8 @@
  */
 
 #include "qemu/osdep.h"
-#include <qnio/qnio_api.h>
+#include "block/vxhs_shim.h"
+#include <gmodule.h>
 #include <sys/param.h>
 #include "block/block_int.h"
 #include "qapi/qmp/qerror.h"
@@ -57,6 +58,96 @@ typedef struct BDRVVXHSState {
     char *vdisk_guid;
     char *tlscredsid; /* tlscredsid */
 } BDRVVXHSState;
+
+#define LIBVXHS_FULL_PATHNAME "/usr/lib64/qemu/libvxhs.so.1"
+static bool libvxhs_loaded;
+static GModule *libvxhs_handle;
+
+static LibVXHSFuncs libvxhs;
+
+typedef struct LibVXHSSymbols {
+    const char *name;
+    gpointer *addr;
+} LibVXHSSymbols;
+
+static LibVXHSSymbols libvxhs_symbols[] = {
+    {"iio_init",        (gpointer *) &libvxhs.iio_init},
+    {"iio_fini",        (gpointer *) &libvxhs.iio_fini},
+    {"iio_min_version", (gpointer *) &libvxhs.iio_min_version},
+    {"iio_max_version", (gpointer *) &libvxhs.iio_max_version},
+    {"iio_open",        (gpointer *) &libvxhs.iio_open},
+    {"iio_close",       (gpointer *) &libvxhs.iio_close},
+    {"iio_writev",      (gpointer *) &libvxhs.iio_writev},
+    {"iio_readv",       (gpointer *) &libvxhs.iio_readv},
+    {"iio_ioctl",       (gpointer *) &libvxhs.iio_ioctl},
+    {NULL}
+};
+
+static void bdrv_vxhs_set_funcs(GModule *handle, Error **errp)
+{
+    int i = 0;
+    while (libvxhs_symbols[i].name) {
+        const char *name = libvxhs_symbols[i].name;
+        if (!g_module_symbol(handle, name, libvxhs_symbols[i].addr)) {
+            error_setg(errp, "%s could not be loaded from libvxhs: %s",
+                       name, g_module_error());
+            return;
+        }
+        ++i;
+    }
+}
+
+static void bdrv_vxhs_load_libs(Error **errp)
+{
+    Error *local_err = NULL;
+    int32_t ver;
+
+    if (libvxhs_loaded) {
+        return;
+    }
+
+    if (!g_module_supported()) {
+        error_setg(errp, "modules are not supported on this platform: %s",
+                     g_module_error());
+        return;
+    }
+
+    libvxhs_handle = g_module_open(LIBVXHS_FULL_PATHNAME,
+                                   G_MODULE_BIND_LAZY | G_MODULE_BIND_LOCAL);
+    if (!libvxhs_handle) {
+        error_setg(errp, "error loading libvxhs: %s", g_module_error());
+        return;
+    }
+
+    g_module_make_resident(libvxhs_handle);
+
+    bdrv_vxhs_set_funcs(libvxhs_handle, &local_err);
+    if (local_err) {
+        error_propagate(errp, local_err);
+        return;
+    }
+
+    /* Now check to see if the libvxhs we are using here is supported
+     * by the loaded version */
+
+    ver = (*libvxhs.iio_min_version)();
+    if (ver > QNIO_VERSION) {
+        error_setg(errp, "Trying to use libvxhs version %"PRId32" API, but "
+                         "only %"PRId32" or newer is supported by %s",
+                          QNIO_VERSION, ver, LIBVXHS_FULL_PATHNAME);
+        return;
+    }
+
+    ver = (*libvxhs.iio_max_version)();
+    if (ver < QNIO_VERSION) {
+        error_setg(errp, "Trying to use libvxhs version %"PRId32" API, but "
+                         "only %"PRId32" or earlier is supported by %s",
+                          QNIO_VERSION, ver, LIBVXHS_FULL_PATHNAME);
+        return;
+    }
+
+    libvxhs_loaded = true;
+}
 
 static void vxhs_complete_aio_bh(void *opaque)
 {
@@ -219,7 +310,7 @@ static void vxhs_parse_filename(const char *filename, QDict *options,
 static int vxhs_init_and_ref(void)
 {
     if (vxhs_ref++ == 0) {
-        if (iio_init(QNIO_VERSION, vxhs_iio_callback)) {
+        if ((*libvxhs.iio_init)(QNIO_VERSION, vxhs_iio_callback)) {
             return -ENODEV;
         }
     }
@@ -229,7 +320,7 @@ static int vxhs_init_and_ref(void)
 static void vxhs_unref(void)
 {
     if (--vxhs_ref == 0) {
-        iio_fini();
+        (*libvxhs.iio_fini)();
     }
 }
 
@@ -299,8 +390,17 @@ static int vxhs_open(BlockDriverState *bs, QDict *options,
     char *client_key = NULL;
     char *client_cert = NULL;
 
+    bdrv_vxhs_load_libs(&local_err);
+    if (local_err) {
+        error_propagate(errp, local_err);
+        /* on error, cannot cleanup because the iio_fini() function
+         * is not loaded */
+        return -EINVAL;
+    }
+
     ret = vxhs_init_and_ref();
     if (ret < 0) {
+        error_setg(&local_err, "libvxhs iio_init() failed");
         ret = -EINVAL;
         goto out;
     }
@@ -385,8 +485,8 @@ static int vxhs_open(BlockDriverState *bs, QDict *options,
     /*
      * Open qnio channel to storage agent if not opened before
      */
-    dev_handlep = iio_open(of_vsa_addr, s->vdisk_guid, 0,
-                           cacert, client_key, client_cert);
+    dev_handlep = (*libvxhs.iio_open)(of_vsa_addr, s->vdisk_guid, 0,
+                                      cacert, client_key, client_cert);
     if (dev_handlep == NULL) {
         trace_vxhs_open_iio_open(of_vsa_addr);
         ret = -ENODEV;
@@ -450,12 +550,12 @@ static BlockAIOCB *vxhs_aio_rw(BlockDriverState *bs, int64_t sector_num,
 
     switch (iodir) {
     case VDISK_AIO_WRITE:
-            ret = iio_writev(dev_handle, acb, qiov->iov, qiov->niov,
-                             offset, (uint64_t)size, iio_flags);
+            ret = (*libvxhs.iio_writev)(dev_handle, acb, qiov->iov, qiov->niov,
+                                        offset, (uint64_t)size, iio_flags);
             break;
     case VDISK_AIO_READ:
-            ret = iio_readv(dev_handle, acb, qiov->iov, qiov->niov,
-                            offset, (uint64_t)size, iio_flags);
+            ret = (*libvxhs.iio_readv)(dev_handle, acb, qiov->iov, qiov->niov,
+                                       offset, (uint64_t)size, iio_flags);
             break;
     default:
             trace_vxhs_aio_rw_invalid(iodir);
@@ -505,7 +605,7 @@ static void vxhs_close(BlockDriverState *bs)
      * Close vDisk device
      */
     if (s->vdisk_hostinfo.dev_handle) {
-        iio_close(s->vdisk_hostinfo.dev_handle);
+        (*libvxhs.iio_close)(s->vdisk_hostinfo.dev_handle);
         s->vdisk_hostinfo.dev_handle = NULL;
     }
 
@@ -527,7 +627,7 @@ static int64_t vxhs_get_vdisk_stat(BDRVVXHSState *s)
     int ret = 0;
     void *dev_handle = s->vdisk_hostinfo.dev_handle;
 
-    ret = iio_ioctl(dev_handle, IOR_VDISK_STAT, &vdisk_size, 0);
+    ret = (*libvxhs.iio_ioctl)(dev_handle, IOR_VDISK_STAT, &vdisk_size, 0);
     if (ret < 0) {
         trace_vxhs_get_vdisk_stat_err(s->vdisk_guid, ret, errno);
         return -EIO;

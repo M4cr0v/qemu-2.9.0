@@ -3091,7 +3091,7 @@ else
     glib_req_ver=2.22
 fi
 glib_modules=gthread-2.0
-if test "$modules" = yes; then
+if test "$modules" = yes -o "$vxhs" = yes; then
     glib_modules="$glib_modules gmodule-2.0"
 fi
 
@@ -4793,33 +4793,6 @@ if compile_prog "" "" ; then
 fi
 
 ##########################################
-# Veritas HyperScale block driver VxHS
-# Check if libvxhs is installed
-
-if test "$vxhs" != "no" ; then
-  cat > $TMPC <<EOF
-#include <stdint.h>
-#include <qnio/qnio_api.h>
-
-void *vxhs_callback;
-
-int main(void) {
-    iio_init(QNIO_VERSION, vxhs_callback);
-    return 0;
-}
-EOF
-  vxhs_libs="-lvxhs -lssl"
-  if compile_prog "" "$vxhs_libs" ; then
-    vxhs=yes
-  else
-    if test "$vxhs" = "yes" ; then
-      feature_not_found "vxhs block device" "Install libvxhs See github"
-    fi
-    vxhs=no
-  fi
-fi
-
-##########################################
 # End of CC checks
 # After here, no more $cc or $ld runs
 
@@ -5831,8 +5804,8 @@ if test "$pthread_setname_np" = "yes" ; then
 fi
 
 if test "$vxhs" = "yes" ; then
-  echo "CONFIG_VXHS=y" >> $config_host_mak
-  echo "VXHS_LIBS=$vxhs_libs" >> $config_host_mak
+  echo "CONFIG_VXHS=m" >> $config_host_mak
+  echo "VXHS_LIBS= -lssl" >> $config_host_mak
 fi
 
 if test "$tcg_interpreter" = "yes"; then
