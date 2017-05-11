@@ -474,6 +474,21 @@ static bool __redhat_com_has_bs_opts(QDict *bs_opts)
     return s != n;
 }
 
+/**
+ * libvirt expects to be able to pass io driver options (aio=native) for CDROM
+ * drives without inserted media. While this has worked historically, given the
+ * above workaround and lack of a supported alternative in current versions of
+ * libvirt, certain options such as aio=native cannot be supported as it
+ * requires the use of an accompanying cache option, which we also ignore.
+ * Until libvirt learns how to supply cache options to inserted media, ignore
+ * the aio= preference on empty CDROMs with the understanding that un-tuned
+ * performance is preferable to being unable to use the CDROM at all.
+ */
+static int __redhat_com_filter_flags(int flags)
+{
+    return flags & ~BDRV_O_NATIVE_AIO;
+}
+
 /* Takes the ownership of bs_opts */
 static BlockBackend *blockdev_init(const char *file, QDict *bs_opts,
                                    Error **errp)
@@ -586,7 +601,7 @@ static BlockBackend *blockdev_init(const char *file, QDict *bs_opts,
 
         blk = blk_new(0, BLK_PERM_ALL);
         blk_rs = blk_get_root_state(blk);
-        blk_rs->open_flags    = bdrv_flags;
+        blk_rs->open_flags    = __redhat_com_filter_flags(bdrv_flags);
         blk_rs->read_only     = read_only;
         blk_rs->detect_zeroes = detect_zeroes;
 
