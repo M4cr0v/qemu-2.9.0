@@ -1304,6 +1304,13 @@ static int ram_save_target_page(MigrationState *ms, QEMUFile *f,
  *                     block.
  *
  * Returns: Number of pages written.
+ * Starting at *offset send pages up to the end of the current host
+ * page. It's valid for the initial offset to point into the middle of
+ * a host page in which case the remainder of the hostpage is sent.
+ * Only dirty target pages are sent. Note that the host page size may
+ * be a huge page for this block.
+ * The saving stops at the boundary of the used_length of the block
+ * if the RAMBlock isn't a multiple of the host page size.
  *
  * @f: QEMUFile where to send the data
  * @block: pointer to block that contains the page we want to send
@@ -1332,7 +1339,8 @@ static int ram_save_host_page(MigrationState *ms, QEMUFile *f,
         pages += tmppages;
         pss->offset += TARGET_PAGE_SIZE;
         dirty_ram_abs += TARGET_PAGE_SIZE;
-    } while (pss->offset & (pagesize - 1));
+    } while ((pss->offset & (pagesize - 1)) &&
+             offset_in_ramblock(pss->block, pss->offset));
 
     /* The offset we leave with is the last one we looked at */
     pss->offset -= TARGET_PAGE_SIZE;
