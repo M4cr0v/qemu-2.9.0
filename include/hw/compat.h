@@ -341,10 +341,6 @@
         .property = "old-multiple-chip-handling",\
         .value    = "on",\
     },{ /* HW_COMPAT_RHEL7_3 */ \
-        .driver   = "pci-bridge",\
-        .property = "shpc",\
-        .value    = "on",\
-    },{ /* HW_COMPAT_RHEL7_3 */ \
         .driver   = TYPE_PCI_DEVICE,\
         .property = "x-pcie-extcap-init",\
         .value    = "off",\
