@@ -405,10 +405,12 @@ static void pc_q35_init_rhel730(MachineState *machine)
 
 static void pc_q35_machine_rhel730_options(MachineClass *m)
 {
+    PCMachineClass *pcmc = PC_MACHINE_CLASS(m);
     pc_q35_machine_rhel740_options(m);
     m->alias = NULL;
     m->desc = "RHEL-7.3.0 PC (Q35 + ICH9, 2009)";
     m->max_cpus = 255;
+    pcmc->linuxboot_dma_enabled = false;
     SET_MACHINE_COMPAT(m, PC_RHEL7_3_COMPAT);
 }
 

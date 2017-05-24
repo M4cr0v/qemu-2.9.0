@@ -1155,10 +1155,12 @@ static void pc_init_rhel730(MachineState *machine)
 
 static void pc_machine_rhel730_options(MachineClass *m)
 {
+    PCMachineClass *pcmc = PC_MACHINE_CLASS(m);
     pc_machine_rhel740_options(m);
     m->alias = NULL;
     m->is_default = 0;
     m->desc = "RHEL 7.3.0 PC (i440FX + PIIX, 1996)";
+    pcmc->linuxboot_dma_enabled = false;
     SET_MACHINE_COMPAT(m, PC_RHEL7_3_COMPAT);
 }
 
