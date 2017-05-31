@@ -1704,7 +1704,15 @@ static void hmp_info_numa(Monitor *mon, const QDict *qdict)
     for (i = 0; i < nb_numa_nodes; i++) {
         monitor_printf(mon, "node %d cpus:", i);
         CPU_FOREACH(cpu) {
-            if (cpu->numa_node == i) {
+            /*
+             * Here, numa_get_node_for_cpu(cpu->cpu_index)
+             * can be replaced by cpu->numa_node, if we backport
+             * the following upstream commits:
+             * - 0b8497f08c spapr: add node-id property to sPAPR core
+             * - bd4c1bfe3e virt-arm: add node-id property to CPU
+             * - 93b2a8cb0b pc: add node-id property to CPU
+             */
+            if (numa_get_node_for_cpu(cpu->cpu_index) == i) {
                 monitor_printf(mon, " %d", cpu->cpu_index);
             }
         }
