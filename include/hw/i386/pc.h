@@ -1237,75 +1237,75 @@ extern void igd_passthrough_isa_bridge_create(PCIBus *bus, uint16_t gpu_dev_id);
 	},\
         { /* PC_RHEL7_1_COMPAT */ \
             .driver   = "qemu64" "-" TYPE_X86_CPU,\
-            .property = "level",\
+            .property = "min-level",\
             .value    = stringify(4),\
         },{ /* PC_RHEL7_1_COMPAT */ \
             .driver   = "kvm64" "-" TYPE_X86_CPU,\
-            .property = "level",\
+            .property = "min-level",\
             .value    = stringify(5),\
         },{ /* PC_RHEL7_1_COMPAT */ \
             .driver   = "pentium3" "-" TYPE_X86_CPU,\
-            .property = "level",\
+            .property = "min-level",\
             .value    = stringify(2),\
         },{ /* PC_RHEL7_1_COMPAT */ \
             .driver   = "n270" "-" TYPE_X86_CPU,\
-            .property = "level",\
+            .property = "min-level",\
             .value    = stringify(5),\
         },{ /* PC_RHEL7_1_COMPAT */ \
             .driver   = "Conroe" "-" TYPE_X86_CPU,\
-            .property = "level",\
+            .property = "min-level",\
             .value    = stringify(4),\
         },{ /* PC_RHEL7_1_COMPAT */ \
             .driver   = "Penryn" "-" TYPE_X86_CPU,\
-            .property = "level",\
+            .property = "min-level",\
             .value    = stringify(4),\
         },{ /* PC_RHEL7_1_COMPAT */ \
             .driver   = "Nehalem" "-" TYPE_X86_CPU,\
-            .property = "level",\
+            .property = "min-level",\
             .value    = stringify(4),\
         },{ /* PC_RHEL7_1_COMPAT */ \
             .driver   = "n270" "-" TYPE_X86_CPU,\
-            .property = "xlevel",\
+            .property = "min-xlevel",\
             .value    = stringify(0x8000000a),\
         },{ /* PC_RHEL7_1_COMPAT */ \
             .driver   = "Penryn" "-" TYPE_X86_CPU,\
-            .property = "xlevel",\
+            .property = "min-xlevel",\
             .value    = stringify(0x8000000a),\
         },{ /* PC_RHEL7_1_COMPAT */ \
             .driver   = "Conroe" "-" TYPE_X86_CPU,\
-            .property = "xlevel",\
+            .property = "min-xlevel",\
             .value    = stringify(0x8000000a),\
         },{ /* PC_RHEL7_1_COMPAT */ \
             .driver   = "Nehalem" "-" TYPE_X86_CPU,\
-            .property = "xlevel",\
+            .property = "min-xlevel",\
             .value    = stringify(0x8000000a),\
         },{ /* PC_RHEL7_1_COMPAT */ \
             .driver   = "Westmere" "-" TYPE_X86_CPU,\
-            .property = "xlevel",\
+            .property = "min-xlevel",\
             .value    = stringify(0x8000000a),\
         },{ /* PC_RHEL7_1_COMPAT */ \
             .driver   = "SandyBridge" "-" TYPE_X86_CPU,\
-            .property = "xlevel",\
+            .property = "min-xlevel",\
             .value    = stringify(0x8000000a),\
         },{ /* PC_RHEL7_1_COMPAT */ \
             .driver   = "IvyBridge" "-" TYPE_X86_CPU,\
-            .property = "xlevel",\
+            .property = "min-xlevel",\
             .value    = stringify(0x8000000a),\
         },{ /* PC_RHEL7_1_COMPAT */ \
             .driver   = "Haswell" "-" TYPE_X86_CPU,\
-            .property = "xlevel",\
+            .property = "min-xlevel",\
             .value    = stringify(0x8000000a),\
         },{ /* PC_RHEL7_1_COMPAT */ \
             .driver   = "Haswell-noTSX" "-" TYPE_X86_CPU,\
-            .property = "xlevel",\
+            .property = "min-xlevel",\
             .value    = stringify(0x8000000a),\
         },{ /* PC_RHEL7_1_COMPAT */ \
             .driver   = "Broadwell" "-" TYPE_X86_CPU,\
-            .property = "xlevel",\
+            .property = "min-xlevel",\
             .value    = stringify(0x8000000a),\
         },{ /* PC_RHEL7_1_COMPAT */ \
             .driver   = "Broadwell-noTSX" "-" TYPE_X86_CPU,\
-            .property = "xlevel",\
+            .property = "min-xlevel",\
             .value    = stringify(0x8000000a),\
         },
 

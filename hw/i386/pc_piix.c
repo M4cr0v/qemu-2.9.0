@@ -1354,11 +1354,11 @@ DEFINE_PC_MACHINE(rhel700, "pc-i440fx-rhel7.0.0", pc_init_rhel700,
             .value    = "off",\
         },{\
             .driver = "qemu32-" TYPE_X86_CPU,\
-            .property = "xlevel",\
+            .property = "min-xlevel",\
             .value = stringify(0),\
         },{\
             .driver = "486-" TYPE_X86_CPU,\
-            .property = "level",\
+            .property = "min-level",\
             .value = stringify(0),\
         },{\
             .driver   = "qemu32-" TYPE_X86_CPU,\
@@ -1684,15 +1684,15 @@ DEFINE_PC_MACHINE(rhel640, "rhel6.4.0", pc_init_rhel640,
 #define PC_RHEL6_3_COMPAT \
         {\
             .driver   = "Conroe-" TYPE_X86_CPU,\
-            .property = "level",\
+            .property = "min-level",\
             .value    = stringify(2),\
         },{\
             .driver   = "Penryn-" TYPE_X86_CPU,\
-            .property = "level",\
+            .property = "min-level",\
             .value    = stringify(2),\
         },{\
             .driver   = "Nehalem-" TYPE_X86_CPU,\
-            .property = "level",\
+            .property = "min-level",\
             .value    = stringify(2),\
         },{\
             .driver   = "e1000",\
