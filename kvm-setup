@@ -1,0 +1,40 @@
+#! /bin/bash
+
+kvm_setup_powerpc () {
+    if grep '^platform[[:space:]]*:[[:space:]]*PowerNV' /proc/cpuinfo > /dev/null; then
+	# PowerNV platform, which is KVM HV capable
+
+	if [ -z "$SUBCORES" ]; then
+	    SUBCORES=1
+	fi
+
+	# Step 1. Load the KVM HVmodule
+	if ! modprobe -b kvm_hv; then
+	    return
+	fi
+
+	# On POWER8 a host core can only run threads of a single
+	# guest, meaning that SMT must be disabled on the host in
+	# order to run KVM guests. (Also applieds to POWER7, but we
+	# don't support that).
+	#
+	# POWER9 doesn't have this limitation (though it will for hash
+	# guests on radix host when that's implemented).  So, only set
+	# up subcores and disable SMT for POWER*.
+	if grep '^cpu[[:space:]]*:[[:space:]]*POWER8' /proc/cpuinfo > /dev/null; then
+	    # Step 2. Configure subcore mode
+	    /usr/sbin/ppc64_cpu --subcores-per-core=$SUBCORES
+
+	    # Step 3. Disable SMT (multithreading)
+	    /usr/sbin/ppc64_cpu --smt=off
+	fi
+    fi
+}
+
+case $(uname -m) in
+    ppc64|ppc64le)
+	kvm_setup_powerpc
+	;;
+esac
+
+exit 0
