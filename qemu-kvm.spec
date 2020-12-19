@@ -987,9 +987,9 @@ ApplyOptionalPatch()
 # ApplyOptionalPatch qemu-kvm-test.patch
 
 # for tscdeadline_latency.flat
-%ifarch x86_64
-  tar -xf %{SOURCE25}
-%endif
+# %ifarch x86_64
+#   tar -xf %{SOURCE25}
+# %endif
 
 %build
 buildarch="%{kvm_target}-softmmu"
